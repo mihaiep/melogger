@@ -4,11 +4,11 @@ from setuptools import setup, find_packages
 
 melogger_path = os.path.abspath(os.path.dirname(__file__))
 
-VERSION = "1.0.0"
+VERSION = "1.0.1"
 DESCRIPTION = "A custom plug and play logger"
 
 setup(
-    name="melogger",
+    name=f"melogger-{VERSION}",
     url="https://github.com/mihaiep/melogger",
     version=VERSION,
     description=DESCRIPTION,

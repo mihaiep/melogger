@@ -25,7 +25,7 @@ class Logger(_logging.Logger):
         end - end line character override for next message"""
         if self.isEnabledFor(_Levels.PLAIN.value):
             module, function = self.__get_module_and_function()
-            extra = {'crt_module': module, 'crt_method_name': function, 'lsep': end}
+            extra = {'crt_module': module, 'crt_method_name': function, 'end': end}
             if color is not None:
                 extra['col_start'] = color
             self._log(_Levels.PLAIN.value, msg, args, **kwargs, extra=extra)
