@@ -8,7 +8,7 @@ VERSION = "1.0.1"
 DESCRIPTION = "A custom plug and play logger"
 
 setup(
-    name=f"melogger-{VERSION}",
+    name=f"melogger",
     url="https://github.com/mihaiep/melogger",
     version=VERSION,
     description=DESCRIPTION,
