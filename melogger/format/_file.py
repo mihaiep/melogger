@@ -9,7 +9,10 @@ class _FileFormatter(_logging.Formatter):
     LINE_SEP = "\n"
     ANIS_REGEX = r"\033\[[\d;]*[A-Za-z]"
     _logging.addLevelName(Levels.PLAIN.value, "PLAIN")
-    FORMATS = {}
+
+    def __init__(self, formats: dict, fmt=None, datefmt=None, style="%", validate=True, *, defaults=None):
+        self.FORMATS = formats
+        super().__init__(fmt, datefmt, style, validate, defaults=defaults)
 
     def format(self, message) -> str:
         cpy_msg = _copy(message)

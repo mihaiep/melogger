@@ -11,8 +11,6 @@ from .utils import Levels as _Levels, FORMATS as _FORMATS
 
 
 class LoggerBuilder:
-    __logger = None
-
     @staticmethod
     def get_logger(name: str = "LoggerME", level: _Union[int, _Levels] = _Levels.INFO, formats: dict = _FORMATS, terminator: str = "",
                    logs_path: str = None, file_name: str = None, file_terminator: str = "", file_mode: str = 'a',
@@ -31,30 +29,41 @@ class LoggerBuilder:
         :param file_max_size: max size of a file
         :return: Logger
         """
-        if LoggerBuilder.__logger is None:
-            _ConsoleFormatter.FORMATS = formats
-            _FileFormatter.FORMATS = formats
+        logger = _Logger(name)
+        LoggerBuilder.setup_console_handler(logger, level, formats, terminator)
+        if file_name: LoggerBuilder.setup_file_handler(logger, level, formats, logs_path, file_name, file_terminator, file_mode, file_enc, file_backups, file_max_size)
+        logger._Logger__start_execution()
+        return logger
 
-            LoggerBuilder.__logger = _Logger(name)
+    @staticmethod
+    def setup_console_handler(logger: _Logger, level: _Union[int, _Levels] = _Levels.INFO, formats: dict = _FORMATS, terminator: str = "", remove_handlers: bool = False):
+        ch = _logging.StreamHandler(stream=_sys.stdout)
+        ch.setFormatter(_ConsoleFormatter(formats))
+        ch.setLevel(level.value if isinstance(level, _Levels) else level)
+        ch.terminator = terminator
+        LoggerBuilder.__finalize_setup(logger, ch, _logging.StreamHandler, remove_handlers)
 
-            ch = _logging.StreamHandler(stream=_sys.stdout)
-            ch.setFormatter(_ConsoleFormatter())
-            ch.setLevel(level.value if isinstance(level, _Levels) else level)
-            ch.terminator = terminator
-            LoggerBuilder.__logger.addHandler(ch)
+    @staticmethod
+    def setup_file_handler(logger: _Logger, file_level: _Union[int, _Levels] = _Levels.INFO, file_formats: dict = _FORMATS,
+                           logs_path: str = None, file_name: str = None, file_terminator: str = "", file_mode: str = 'a',
+                           file_enc='utf-8', file_backups=5, file_max_size=1024 ** 2 * 5, remove_handlers: bool = False):
+        if not logs_path:
+            logs_path = _os.path.abspath(_os.curdir)
+        if not _os.path.isdir(logs_path):
+            _os.mkdir(logs_path)
+        file_path = _os.path.join(logs_path, file_name)
+        _sys.stdout.write(f"Start logging into: {file_path}{_os.linesep}")
+        fh = _RotatingFileHandler(filename=file_path, mode=file_mode, encoding=file_enc) if file_mode == 'w' else \
+            _RotatingFileHandler(filename=file_path, mode=file_mode, encoding=file_enc, backupCount=file_backups, maxBytes=file_max_size)
+        fh.setFormatter(_FileFormatter(file_formats))
+        fh.setLevel(file_level.value if isinstance(file_level, _Levels) else file_level)
+        fh.terminator = file_terminator
+        LoggerBuilder.__finalize_setup(logger, fh, _logging.FileHandler, remove_handlers)
 
-            if file_name:
-                if not logs_path:
-                    logs_path = _os.path.abspath(_os.curdir)
-                if not _os.path.isdir(logs_path):
-                    _os.mkdir(logs_path)
-                file_path = _os.path.join(logs_path, file_name)
-                _sys.stdout.write(f"Start logging into: {file_path}{_os.linesep}")
-                fh = _RotatingFileHandler(filename=file_path, mode=file_mode, encoding=file_enc) if file_mode == 'w' else \
-                     _RotatingFileHandler(filename=file_path, mode=file_mode, encoding=file_enc, backupCount=file_backups,maxBytes=file_max_size)
-                fh.setFormatter(_FileFormatter())
-                fh.setLevel(level.value if isinstance(level, _Levels) else level)
-                fh.terminator = file_terminator
-                LoggerBuilder.__logger.addHandler(fh)
-            LoggerBuilder.__logger._Logger__start_execution()
-        return LoggerBuilder.__logger
+    @staticmethod
+    def __finalize_setup(logger, new_handler, handler_type, remove_handlers):
+        if remove_handlers:
+            for handler in list(logger.handlers):
+                if isinstance(handler, handler_type):
+                    logger.handlers.remove(handler)
+        logger.addHandler(new_handler)

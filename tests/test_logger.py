@@ -11,9 +11,6 @@ class LoggerTest(unittest.TestCase):
     LOG_FORMAT = r'^\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d,\d\d\d \[{}] \w+ \(\d+\) {}$'
     LOG_FORMAT_COLORED = ESCAPED_MODIFIER + r'\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d,\d\d\d \[{}] \w+ \(\d+\)' + ESCAPED_MODIFIER + ' {}'
 
-    def setUp(self):
-        LoggerBuilder._LoggerBuilder__logger = None
-
     @classmethod
     def tearDownClass(cls):
         os.remove('test.log')
