@@ -2,13 +2,12 @@
 
 ## Builder
 
-Provide a singleton instance for you application by execution method **LoggerBuilder.get_logger**.
+### LoggerBuilder.get_logger
+Create a new logger on each call.
 
-Arguments available.
-
-    name – Logger name
-    level – Lowest logs level that will be displayed
-    formats – A dict to describe the format for each log level
+    name – logger name
+    level – lowest logs level that will be displayed
+    formats – a dict to describe the format for each log level
     terminator – end line character
     logs_path – path where logs are going be stored
     file_name – logs file name
@@ -17,6 +16,32 @@ Arguments available.
     file_enc – encoding for file
     file_backups – number of replicas
     file_max_size – max size of a fil
+
+### LoggerBuilder.setup_console_handler
+Allows to add a console handler on an existing logger.
+
+    logger - existing Logger
+    level - lowest logs level that will be displayed
+    formats - a dict to describe the format for each log level
+    terminator - end line character
+    remove_handlers - allows to delete all StreamHandler handlers 
+
+### LoggerBuilder.setup_file_handler
+
+Allows to add a file handler on an existing logger.
+
+    logger - existing Logger
+    file_level - lowest logs level that will be displayed
+	file_formats - a dict to describe the format for each log level
+	logs_path - path where logs are going be stored
+	file_name - logs file name
+	file_terminator - end line character for files
+	file_mode - open mode - same as open(...,mode=<mode>)
+	file_enc - encoding for file
+	file_backups - number of replicas
+	file_max_size - max size of a fil
+	remove_handlers - allows to delete all StreamHandler handlers
+
 
 ## Logger
 
