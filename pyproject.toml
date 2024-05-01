@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools >= 61.0"]
+build-backend = "setuptools.build_meta"
+
+
+[project]
+name = "melogger"
+dynamic=['version']
+requires-python = ">=3.10"
+authors = [{ name = "Mihai Eduard Petcu" }]
+
+readme = "README.md"
+description = "A custom plug and play logger"
+keywords = ["log", "logger", "easy logger", "custom logger"]
+license = { text = "GNU GENERAL PUBLIC LICENSE" }
+
+
+[project.urls]
+Repository = "https://github.com/mihaiep/melogger"
+
+
+[tool.setuptools.dynamic]
+version = {attr = "melogger.VERSION"}
+
+
+[tool.setuptools]
+platforms = ["Windows", "Linux", "MacOS", "MacOS X", "Unix"]
+
+[tool.setuptools.packages.find]
+include = ["melogger*"]
