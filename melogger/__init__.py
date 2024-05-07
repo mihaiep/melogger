@@ -5,4 +5,4 @@ from .logger import Logger
 from .utils import Levels, FORMATS
 
 __all__ = ["LoggerBuilder", "Logger", "ConsoleFormatter", "FileFormatter", "Levels", "Colors", "FORMATS"]
-VERSION = "1.0.0"
+VERSION = "1.0.1"
