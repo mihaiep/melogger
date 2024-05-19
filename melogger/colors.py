@@ -74,6 +74,6 @@ class Colors:
 
     @staticmethod
     def hex(hex_val: str) -> str:
-        if hex_val.startswith("#"): hex_val = hex_val[1:]
+        hex_val = hex_val[1:] if hex_val.startswith("#") else hex_val
         rgb = tuple(int(hex_val[i:i + 2], 16) for i in (0, 2, 4))
         return f"\033[38;2;{rgb[0]};{rgb[1]};{rgb[2]}m"

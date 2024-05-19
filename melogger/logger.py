@@ -1,56 +1,94 @@
 import logging as _logging
-import os as _os
-from typing import Union
+import sys
+import traceback
 
-from .colors import Colors as _Colors
-from .utils import Levels as _Levels
+from .utils import Levels as _Levels, FORMATS as _FORMATS
 
 
+# noinspection DuplicatedCode
 class Logger(_logging.Logger):
     DIR = "/".join(__file__.split("/")[:-2])
 
-    def info_green(self, msg: str, *args, **kwargs):
-        """Force next INFO log to be green"""
-        module, function = self.__get_module_and_function()
-        self.info(msg, *args, **kwargs, extra={'col_start': _Colors.COL.GREEN, 'crt_module': module, 'crt_method_name': function})
+    def debug(self, msg, **kwargs):
+        self.__set_module_and_function(kwargs)
+        kwargs.update({"pref": kwargs.pop("pref", "")})
+        kwargs.update({"terminator": kwargs.pop("end", "\n")})
+        kwargs.update({"col_start": kwargs.pop("color", _FORMATS.get(_Levels.DEBUG.value).color)})
+        super().debug(msg, extra=kwargs)
 
-    def info_color(self, msg: str, color: str, *args, **kwargs):
-        """Allows to set a color for next INFO log message"""
-        module, function = self.__get_module_and_function()
-        self.info(msg, *args, **kwargs, extra={'col_start': color, 'crt_module': module, 'crt_method_name': function})
+    def info(self, msg, **kwargs):
+        self.__set_module_and_function(kwargs)
+        kwargs.update({"pref": kwargs.pop("pref", "")})
+        kwargs.update({"terminator": kwargs.pop("end", "\n")})
+        kwargs.update({"col_start": kwargs.pop("color", _FORMATS.get(_Levels.INFO.value).color)})
+        super().info(msg, extra=kwargs)
 
-    def plain(self, msg, color: str = None, end: str = _os.linesep, *args, **kwargs):
-        """Print message without any format. \n
-        Color - change the color for next message\n
-        end - end line character override for next message"""
+    def warning(self, msg, **kwargs):
+        self.__set_module_and_function(kwargs)
+        kwargs.update({"pref": kwargs.pop("pref", "")})
+        kwargs.update({"terminator": kwargs.pop("end", "\n")})
+        kwargs.update({"col_start": kwargs.pop("color", _FORMATS.get(_Levels.WARN.value).color)})
+        super().warning(msg, extra=kwargs)
+
+    def warn(self, msg, **kwargs):
+        self.__set_module_and_function(kwargs)
+        kwargs.update({"pref": kwargs.pop("pref", "")})
+        kwargs.update({"terminator": kwargs.pop("end", "\n")})
+        kwargs.update({"col_start": kwargs.pop("color", _FORMATS.get(_Levels.WARN.value).color)})
+        super().warning(msg, extra=kwargs)
+
+    def error(self, msg, **kwargs):
+        self.__set_module_and_function(kwargs)
+        kwargs.update({"pref": kwargs.pop("pref", "")})
+        kwargs.update({"terminator": kwargs.pop("end", "\n")})
+        kwargs.update({"col_start": kwargs.pop("color", _FORMATS.get(_Levels.ERROR.value).color)})
+        super().error(msg, extra=kwargs)
+
+    def exception(self, msg, **kwargs):
+        self.__set_module_and_function(kwargs)
+        kwargs.update({"pref": kwargs.pop("pref", "")})
+        kwargs.update({"terminator": kwargs.pop("end", "\n")})
+        kwargs.update({"col_start": kwargs.pop("color", _FORMATS.get(_Levels.ERROR.value).color)})
+        super().error(msg, extra=kwargs)
+
+    def critical(self, msg, **kwargs):
+        self.__set_module_and_function(kwargs)
+        kwargs.update({"pref": kwargs.pop("pref", "")})
+        kwargs.update({"terminator": kwargs.pop("end", "\n")})
+        kwargs.update({"col_start": kwargs.pop("color", _FORMATS.get(_Levels.CRITICAL.value).color)})
+        super().critical(msg, extra=kwargs)
+
+    def plain(self, msg, **kwargs):
+        """ Print message without any format. """
         if self.isEnabledFor(_Levels.PLAIN.value):
-            module, function = self.__get_module_and_function()
-            extra = {'crt_module': module, 'crt_method_name': function, 'end': end}
-            if color is not None:
-                extra['col_start'] = color
-            self._log(_Levels.PLAIN.value, msg, args, **kwargs, extra=extra)
+            self.__set_module_and_function(kwargs)
+            kwargs.update({"pref": kwargs.pop("pref", "")})
+            kwargs.update({"terminator": kwargs.pop("end", "\n")})
+            kwargs.update({"col_start": kwargs.pop("color", _FORMATS.get(_Levels.PLAIN.value).color)})
+            self._log(_Levels.PLAIN.value, msg, tuple(), extra=kwargs)
 
-    def __start_execution(self, message: str = None):
-        module, function = self.__get_module_and_function(4)
-        message = message if message is not None else "Execution started"
-        self.info(message, extra={'col_start': _Colors.COL.GREEN, 'crt_module': module, 'crt_method_name': function})
-
-    def end_execution(self) -> None:
-        import sys
+    def end_execution(self, **kwargs) -> None:
         if sys.exc_info() != (None, None, None):
-            import traceback
             self.critical("Execution ended.")
             self.critical(traceback.format_exc())
             exit(1)
         else:
-            color = _Colors.COL.DEFAULT
-            module, function = self.__get_module_and_function()
-            self.info("Execution ended.\n\n", extra={'col_start': color, 'cmodule': module, 'cfuncName': function})
+            self.__set_module_and_function(kwargs)
+            kwargs.update({"pref": kwargs.pop("pref", "")})
+            kwargs.update({"terminator": kwargs.pop("end", "\n")})
+            kwargs.update({"col_start": kwargs.pop("color", _FORMATS.get(_Levels.PLAIN.value).color)})
+            super().info("Execution ended.\n\n", extra=kwargs)
 
-    def __get_module_and_function(self, depth=3) -> [str, str]:
+    def __set_module_and_function(self, kwargs, depth=3) -> None:
         module, _, function, _ = self.findCaller(False, depth)
         module = module.split("/")[-1].split(".")[0]
-        return module, function
+        kwargs.update({
+            "crt_module": module,
+            "crt_method_name": function
+        })
 
-    def setLevel(self, level: Union[_Levels, int]):
-        super().setLevel(level.value if isinstance(level, _Levels) else level)
+    def setLevel(self, level: _Levels | int):
+        new_level = level.value if isinstance(level, _Levels) else level
+        super().setLevel(new_level)
+        for handler in self.handlers:
+            handler.setLevel(new_level)

@@ -1,44 +1,63 @@
-import os
+import os.path
 import unittest
+from types import MappingProxyType
 
 from melogger import LoggerBuilder, Levels, Colors
 from melogger.utils import LevelData
 
 
 class LoggerTest(unittest.TestCase):
-    ESCAPED_MODIFIER = r'\033\[[\d;]*[A-Za-z]'
-    LOG1_FORMAT = r'^<{}> \(\d+\) {}$'
-    LOG2_FORMAT = r'^\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d,\d\d\d \[{}] \w+ \(\d+\) {}$'
+    FORMATS = MappingProxyType({
+        Levels.DEBUG.value: LevelData("DEBUG", Colors.COL.DEFAULT, "[--TEST--] [%(level_name)s] %(message)s%(terminator)s"),
+        Levels.INFO.value: LevelData("INFO", Colors.COL.DEFAULT, "[--TEST--] [%(level_name)s] %(message)s%(terminator)s"),
+        Levels.WARN.value: LevelData("WARN", Colors.COL.DEFAULT, "[--TEST--] [%(level_name)s] %(message)s%(terminator)s"),
+        Levels.ERROR.value: LevelData("ERROR", Colors.COL.DEFAULT, "[--TEST--] [%(level_name)s] %(message)s%(terminator)s"),
+        Levels.CRITICAL.value: LevelData("CRITICAL", Colors.COL.DEFAULT, "[--TEST--] [%(level_name)s] %(message)s%(terminator)s"),
+        Levels.PLAIN.value: LevelData("PLAIN", Colors.COL.DEFAULT, "[--TEST--] [%(level_name)s] %(message)s%(terminator)s"),
+    })
 
-    FORMATS = {
-        Levels.DEBUG.value: LevelData("DEBUG", Colors.COL.GREY, "<%(levelname)s> (%(process)d) %(message)s%(terminator)s"),
-        Levels.INFO.value: LevelData("INFO", Colors.COL.DEFAULT, "<%(levelname)s> (%(process)d) %(message)s%(terminator)s"),
-        Levels.WARN.value: LevelData("WARN", Colors.COL.YELLOW, "<%(levelname)s> (%(process)d) %(message)s%(terminator)s"),
-        Levels.ERROR.value: LevelData("ERROR", Colors.COL.RED, "<%(levelname)s> (%(process)d) %(message)s%(terminator)s"),
-        Levels.CRITICAL.value: LevelData("CRITICAL", Colors.COL.PURE.RED, "<%(levelname)s> (%(process)d) %(message)s%(terminator)s"),
-        Levels.PLAIN.value: LevelData("PLAIN", Colors.COL.DEFAULT, "%(start)s%(col_start)s%(message)s%(terminator)s")
-    }
+    @classmethod
+    def setUpClass(cls):
+        cls.logger = LoggerBuilder.build(
+            name="LoggerME",
+            level=Levels.INFO,
+            formats=LoggerTest.FORMATS,
+            terminator="",
+            logs_path="tmp",
+            file_name='test_builder.log',
+            file_terminator="",
+            file_mode="a",
+            file_enc="utf-8",
+            file_backups=5,
+            file_max_size=1024 * 100
+        )
 
     @classmethod
     def tearDownClass(cls):
-        os.remove('test1.log')
-        os.remove('test2.log')
+        for file in os.listdir("tmp"):
+            os.remove(os.path.join("tmp", file))
+        os.removedirs('tmp')
 
-    def test_build_logger(self):
-        logger1 = LoggerBuilder.get_logger("test1", level=Levels.DEBUG, formats=LoggerTest.FORMATS, file_name="test1.log", file_mode='w')
-        logger2 = LoggerBuilder.get_logger("test2", level=Levels.DEBUG, file_name="test2.log", file_mode='w')
-        self.assertEqual(logger1.name, 'test1')
-        self.assertEqual(logger2.name, 'test2')
+    def test_default_logger(self):
+        self.assertEqual("LoggerME", self.logger.name)
 
-        logger1.warning("message info test1")
-        logger2.warning("message info test2")
+        self.assertEqual(Levels.INFO.value, self.logger.level)
 
-        del logger1, logger2
-        with open('test1.log', 'r') as f:
-            lines1 = f.read().splitlines()
-            self.assertRegex(lines1[0], LoggerTest.LOG1_FORMAT.format('INFO', 'Execution started'))
-            self.assertRegex(lines1[1], LoggerTest.LOG1_FORMAT.format('WARN', 'message info test1'))
-        with open('test2.log', 'r') as f:
-            lines2 = f.read().splitlines()
-            self.assertRegex(lines2[0], LoggerTest.LOG2_FORMAT.format('INFO', 'Execution started'))
-            self.assertRegex(lines2[1], LoggerTest.LOG2_FORMAT.format('WARN', 'message info test2'))
+        for handler in [self.logger.handlers[0], self.logger.handlers[1]]:
+            self.assertEqual(Levels.INFO.value, handler.level)
+            self.assertEqual(LoggerTest.FORMATS, handler.formatter.FORMATS)
+            self.assertEqual("", handler.terminator)
+
+        self.assertEqual('a', self.logger.handlers[1].mode)
+        self.assertEqual('utf-8', self.logger.handlers[1].encoding)
+        self.assertEqual(5, self.logger.handlers[1].backupCount)
+        self.assertEqual(102400, self.logger.handlers[1].maxBytes)
+
+        self.assertTrue(os.path.isfile("tmp/test_builder.log"))
+
+    def test_file_rotating_handler(self):
+        line = "a" * 1000
+        self.logger.handlers.pop(0)
+        for i in range(200):
+            self.logger.info(line)
+        self.assertTrue(len(os.listdir("tmp")) == 2)
