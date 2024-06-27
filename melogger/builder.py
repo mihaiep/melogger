@@ -4,7 +4,6 @@ import sys as _sys
 from logging.handlers import RotatingFileHandler as _RotatingFileHandler
 from typing import Union as _Union
 
-from .colors import Colors as _Colors
 from .format import (FileFormatter as _FileFormatter, ConsoleFormatter as _ConsoleFormatter)
 from .logger import Logger as _Logger
 from .utils import Levels as _Levels, FORMATS as _FORMATS
@@ -12,12 +11,20 @@ from .utils import Levels as _Levels, FORMATS as _FORMATS
 
 class LoggerBuilder:
     @staticmethod
-    def build(name: str = "LoggerME", level: _Union[int, _Levels] = _Levels.INFO, formats: dict = _FORMATS, terminator: str = "",
-              logs_path: str = None, file_name: str = None, file_terminator: str = "", file_mode: str = "a",
-              file_enc="utf-8", file_backups=5, file_max_size=1024 ** 2 * 5) -> _Logger:
+    def build(name: str = "LoggerME",
+              logs_level: _Union[int, _Levels] = _Levels.INFO,
+              formats: dict = _FORMATS,
+              terminator: str = "",
+              logs_path: str = None,
+              file_name: str = None,
+              file_terminator: str = "",
+              file_mode: str = "a",
+              file_enc="utf-8",
+              file_backups=5,
+              file_max_size=1024 ** 2 * 5) -> _Logger:
         """
         :param name: Logger name
-        :param level: Lowest logs level that will be displayed
+        :param logs_level: Lowest logs level that will be displayed
         :param formats: A dict to describe the format for each log level
         :param terminator: end line character
         :param logs_path: path where logs are going be stored
@@ -30,11 +37,10 @@ class LoggerBuilder:
         :return: Logger
         """
         logger = _Logger(name)
-        logger.setLevel(level)
-        LoggerBuilder.add_console_handler(logger, level, formats, terminator)
+        logger.addHandler(LoggerBuilder.get_console_handler(logs_level, formats=formats, terminator=terminator))
         if file_name:
-            LoggerBuilder.add_file_handler(name, logger, level, formats, logs_path, file_name, file_terminator, file_mode, file_enc, file_backups, file_max_size)
-        logger.info(f"Logger {_Colors.COL.GREEN}'{name}'{_Colors.END} started")
+            logger.addHandler(LoggerBuilder.get_file_handler(file_name, logs_level, formats=formats, logs_path=logs_path, file_terminator=file_terminator, file_mode=file_mode, file_enc=file_enc, file_backups=file_backups, file_max_size=file_max_size))
+        logger.setLevel(logs_level)
         return logger
 
     @staticmethod
@@ -45,43 +51,41 @@ class LoggerBuilder:
         return handler
 
     @staticmethod
-    def add_console_handler(logger: _Logger, level: _Union[int, _Levels] = _Levels.INFO, formats: dict = _FORMATS, terminator: str = "", remove_handlers: bool = False):
-        ch = LoggerBuilder.__setup_handler(
+    def get_console_handler(logs_level: _Union[int, _Levels], *, formats: dict = _FORMATS, terminator: str = ""):
+        return LoggerBuilder.__setup_handler(
             handler=_logging.StreamHandler(stream=_sys.stdout),
             formatter=_ConsoleFormatter(formats),
-            level=level,
+            level=logs_level,
             terminator=terminator
         )
-        LoggerBuilder.__finalize_setup(logger, ch, _logging.StreamHandler, remove_handlers)
 
     @staticmethod
-    def add_file_handler(name: str, logger: _Logger, file_level: _Union[int, _Levels] = _Levels.INFO, file_formats: dict = _FORMATS,
-                         logs_path: str = None, file_name: str = None, file_terminator: str = "", file_mode: str = "a",
-                         file_enc="utf-8", file_backups=5, file_max_size=1024 ** 2 * 5, remove_handlers: bool = False):
-        if not logs_path:
-            logs_path = _os.path.abspath(_os.curdir)
+    def get_file_handler(file_name: str, logs_level: _Union[int, _Levels], *, formats: dict = _FORMATS,
+                         logs_path: str = None, file_terminator: str = "", file_mode: str = "a", file_enc="utf-8",
+                         file_backups=5, file_max_size=1024 ** 2 * 5) -> _logging.FileHandler:
+        logs_path = logs_path or _os.path.abspath(_os.curdir)
+        file_path = _os.path.join(logs_path, file_name)
         if not _os.path.isdir(logs_path):
             _os.mkdir(logs_path)
-        file_path = _os.path.join(logs_path, file_name)
-        _sys.stdout.write(f"{_Colors.hex('088888')}\"{name}\" will start logging into: {file_path}{_Colors.END}{_os.linesep}{_os.linesep}")
         kwargs = {
             "filename": file_path,
             "mode": file_mode,
             "encoding": file_enc
         }
-        kwargs.update({"backupCount": file_backups, "maxBytes": file_max_size} if file_mode == "a" else {})
-        fh = LoggerBuilder.__setup_handler(
+        if file_mode == "a":
+            kwargs.update({
+                "backupCount": file_backups,
+                "maxBytes": file_max_size
+            })
+        return LoggerBuilder.__setup_handler(
             handler=_RotatingFileHandler(**kwargs),
-            formatter=_FileFormatter(file_formats),
-            level=file_level,
+            formatter=_FileFormatter(formats, is_rfh=file_max_size is not None and file_max_size > 0),
+            level=logs_level,
             terminator=file_terminator
         )
-        LoggerBuilder.__finalize_setup(logger, fh, _logging.FileHandler, remove_handlers)
 
     @staticmethod
-    def __finalize_setup(logger, new_handler, handler_type, remove_handlers):
-        if remove_handlers:
-            for handler in list(logger.handlers):
-                if isinstance(handler, handler_type):
-                    logger.handlers.remove(handler)
-        logger.addHandler(new_handler)
+    def remove_handlers(logger, _filter):
+        for handler in list(logger.handlers):
+            if _filter(handler):
+                logger.handlers.remove(handler)
