@@ -28,15 +28,15 @@ class _FileFormatter(_ConsoleFormatter):
 
     # noinspection PyTypeChecker
     def __handle_pref(self, message: _logging.LogRecord) -> None:
-        split_cr = message.pref.split('\r')
+        split_cr = message.prefix.split('\r')
         if message_cr := len(split_cr) > 1:
-            message.pref = f'\r{split_cr[-1]}'
+            message.prefix = f'\r{split_cr[-1]}'
 
         if self.prev_message is not None:
             prev_new_line = '\n' in self.prev_message.terminator
             if prev_new_line:
-                message.pref = message.pref.replace('\r', "")
+                message.prefix = message.prefix.replace('\r', "")
             elif message_cr:
-                message.pref = message.pref.replace('\r', "\n")
+                message.prefix = message.prefix.replace('\r', "\n")
             elif message.levelno < Levels.PLAIN.value:
-                message.pref = '\n' + message.pref
+                message.prefix = '\n' + message.prefix

@@ -21,9 +21,9 @@ class FormatterExtension:
         return output
 
     @classmethod
-    def _get_parsed_string(cls, level, message, full_line, colored, pref=None, suffix=None):
+    def _get_parsed_string(cls, level, message, full_line, colored, prefix=None, suffix=None):
         level_data = FORMATS.get(level.value if isinstance(level, Levels) else level)
-        output = level_data.text_format.replace("%(pref)s", ("^" if full_line else "") + (pref if pref else ""))
+        output = level_data.text_format.replace("%(prefix)s", ("^" if full_line else "") + (prefix if prefix else ""))
         output = output.replace("%(col_start)s", r"\033\[[\d;]*[A-Za-z]" if colored else "")
         output = output.replace("%(asctime)s", r"\d{4}-\d{2}-\d{2} (\d{2}:?){3},\d{3}")
         output = output.replace("[%(level_name)s]", rf"\[{level_data.label}]")
@@ -35,8 +35,8 @@ class FormatterExtension:
         return output
 
     @classmethod
-    def _get_level_regex(cls, level, message, full_line, colored, pref=None, suffix=None):
-        return re.compile(cls._get_parsed_string(level, message, full_line, colored, pref, suffix))
+    def _get_level_regex(cls, level, message, full_line, colored, prefix=None, suffix=None):
+        return re.compile(cls._get_parsed_string(level, message, full_line, colored, prefix, suffix))
 
     @classmethod
     def _get_combined_regex(cls, *args):

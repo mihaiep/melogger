@@ -41,14 +41,14 @@ class _ConsoleFormatter(_logging.Formatter):
     def custom_format(self, message: _logging.LogRecord) -> None:
         message.col_end = _Colors.END
         message.col_start = self.level_data.color if not hasattr(message, "col_start") else "".join(re.findall(self.ANSI_REGEX, message.col_start))
-        if self.prev_message is not None and message.levelno < Levels.PLAIN.value and '\r' not in message.pref and '\n' not in self.prev_message.terminator:
-            message.pref = '\n' + message.pref
+        if self.prev_message is not None and message.levelno < Levels.PLAIN.value and '\r' not in message.prefix and '\n' not in self.prev_message.terminator:
+            message.prefix = '\n' + message.prefix
 
     # noinspection PyUnresolvedReferences
     @staticmethod
     def __validate_pref(message: _logging.LogRecord):
-        if hasattr(message, "pref") and len(re.sub(r"[ \t\r]", "", message.pref)) > 0:
-            raise ValueError("pref supports only ` `, `\\t` or `\\r`")
+        if hasattr(message, "prefix") and len(re.sub(r"[ \t\r]", "", message.prefix)) > 0:
+            raise ValueError("prefix supports only ` `, `\\t` or `\\r`")
 
     # noinspection PyUnresolvedReferences
     @staticmethod

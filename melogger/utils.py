@@ -22,10 +22,10 @@ class LevelData:
 
 # noinspection SpellCheckingInspection
 FORMATS = _MappingProxyType({
-    Levels.DEBUG.value: LevelData("DEBUG", _Colors.COL.GREY, "%(pref)s%(col_start)s%(asctime)s [%(level_name)s] %(module)s (%(process)d) %(message)s%(col_end)s%(terminator)s"),
-    Levels.INFO.value: LevelData("INFO", _Colors.COL.DEFAULT, "%(pref)s%(col_start)s%(asctime)s [%(level_name)s] %(module)s (%(process)d)%(col_end)s %(message)s%(terminator)s"),
-    Levels.WARN.value: LevelData("WARN", _Colors.COL.YELLOW, "%(pref)s%(col_start)s%(asctime)s [%(level_name)s] %(module)s (%(process)d)%(col_end)s %(message)s%(terminator)s"),
-    Levels.ERROR.value: LevelData("ERROR", _Colors.COL.RED, "%(pref)s%(col_start)s%(asctime)s [%(level_name)s] %(module)s (%(process)d)%(col_end)s %(message)s%(terminator)s"),
-    Levels.CRITICAL.value: LevelData("CRITICAL", _Colors.COL.PURE.RED, "%(pref)s%(col_start)s%(asctime)s [%(level_name)s] %(module)s (%(process)d) %(message)s%(col_end)s%(terminator)s"),
-    Levels.PLAIN.value: LevelData("PLAIN", _Colors.COL.DEFAULT, "%(pref)s%(col_start)s%(message)s%(col_end)s%(terminator)s")
+    Levels.DEBUG.value: LevelData("DEBUG", _Colors.COL.GREY, "%(prefix)s%(col_start)s%(asctime)s [%(level_name)s] %(module)s (%(process)d) %(message)s%(col_end)s%(terminator)s"),
+    Levels.INFO.value: LevelData("INFO", _Colors.COL.DEFAULT, "%(prefix)s%(col_start)s%(asctime)s [%(level_name)s] %(module)s (%(process)d)%(col_end)s %(message)s%(terminator)s"),
+    Levels.WARN.value: LevelData("WARN", _Colors.COL.YELLOW, "%(prefix)s%(col_start)s%(asctime)s [%(level_name)s] %(module)s (%(process)d)%(col_end)s %(message)s%(terminator)s"),
+    Levels.ERROR.value: LevelData("ERROR", _Colors.COL.RED, "%(prefix)s%(col_start)s%(asctime)s [%(level_name)s] %(module)s (%(process)d)%(col_end)s %(message)s%(terminator)s"),
+    Levels.CRITICAL.value: LevelData("CRITICAL", _Colors.COL.PURE.RED, "%(prefix)s%(col_start)s%(asctime)s [%(level_name)s] %(module)s (%(process)d) %(message)s%(col_end)s%(terminator)s"),
+    Levels.PLAIN.value: LevelData("PLAIN", _Colors.COL.DEFAULT, "%(prefix)s%(col_start)s%(message)s%(col_end)s%(terminator)s")
 })
