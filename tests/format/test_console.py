@@ -11,13 +11,13 @@ class ConsoleFormatterTest(unittest.TestCase):
 
     def test_validate_pref(self):
         for val in [1, "<", '\n', "\r\n", "\t\n"]:
-            self.message.pref = val
+            self.message.prefix = val
             # noinspection PyUnresolvedReferences
             self.assertRaises(Exception, ConsoleFormatter._ConsoleFormatter__validate_pref, self.message)
 
         try:
             for val in ['', ' ', '\t', '\r', '\r\r', '\t \r']:
-                self.message.pref = val
+                self.message.prefix = val
                 # noinspection PyUnresolvedReferences
                 ConsoleFormatter._ConsoleFormatter__validate_pref(self.message)
         except ValueError:

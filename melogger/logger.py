@@ -11,49 +11,49 @@ class Logger(_logging.Logger):
 
     def debug(self, msg, **kwargs):
         self.__set_module_and_function(kwargs)
-        kwargs.update({"pref": kwargs.pop("pref", "")})
+        kwargs.update({"prefix": kwargs.pop("prefix", "")})
         kwargs.update({"terminator": kwargs.pop("end", "\n")})
         kwargs.update({"col_start": kwargs.pop("color", _FORMATS.get(_Levels.DEBUG.value).color)})
         super().debug(msg, extra=kwargs)
 
     def info(self, msg, **kwargs):
         self.__set_module_and_function(kwargs)
-        kwargs.update({"pref": kwargs.pop("pref", "")})
+        kwargs.update({"prefix": kwargs.pop("prefix", "")})
         kwargs.update({"terminator": kwargs.pop("end", "\n")})
         kwargs.update({"col_start": kwargs.pop("color", _FORMATS.get(_Levels.INFO.value).color)})
         super().info(msg, extra=kwargs)
 
     def warning(self, msg, **kwargs):
         self.__set_module_and_function(kwargs)
-        kwargs.update({"pref": kwargs.pop("pref", "")})
+        kwargs.update({"prefix": kwargs.pop("prefix", "")})
         kwargs.update({"terminator": kwargs.pop("end", "\n")})
         kwargs.update({"col_start": kwargs.pop("color", _FORMATS.get(_Levels.WARN.value).color)})
         super().warning(msg, extra=kwargs)
 
     def warn(self, msg, **kwargs):
         self.__set_module_and_function(kwargs)
-        kwargs.update({"pref": kwargs.pop("pref", "")})
+        kwargs.update({"prefix": kwargs.pop("prefix", "")})
         kwargs.update({"terminator": kwargs.pop("end", "\n")})
         kwargs.update({"col_start": kwargs.pop("color", _FORMATS.get(_Levels.WARN.value).color)})
         super().warning(msg, extra=kwargs)
 
     def error(self, msg, **kwargs):
         self.__set_module_and_function(kwargs)
-        kwargs.update({"pref": kwargs.pop("pref", "")})
+        kwargs.update({"prefix": kwargs.pop("prefix", "")})
         kwargs.update({"terminator": kwargs.pop("end", "\n")})
         kwargs.update({"col_start": kwargs.pop("color", _FORMATS.get(_Levels.ERROR.value).color)})
         super().error(msg, extra=kwargs)
 
     def exception(self, msg, **kwargs):
         self.__set_module_and_function(kwargs)
-        kwargs.update({"pref": kwargs.pop("pref", "")})
+        kwargs.update({"prefix": kwargs.pop("prefix", "")})
         kwargs.update({"terminator": kwargs.pop("end", "\n")})
         kwargs.update({"col_start": kwargs.pop("color", _FORMATS.get(_Levels.ERROR.value).color)})
         super().error(msg, extra=kwargs)
 
     def critical(self, msg, **kwargs):
         self.__set_module_and_function(kwargs)
-        kwargs.update({"pref": kwargs.pop("pref", "")})
+        kwargs.update({"prefix": kwargs.pop("prefix", "")})
         kwargs.update({"terminator": kwargs.pop("end", "\n")})
         kwargs.update({"col_start": kwargs.pop("color", _FORMATS.get(_Levels.CRITICAL.value).color)})
         super().critical(msg, extra=kwargs)
@@ -62,7 +62,7 @@ class Logger(_logging.Logger):
         """ Print message without any format. """
         if self.isEnabledFor(_Levels.PLAIN.value):
             self.__set_module_and_function(kwargs)
-            kwargs.update({"pref": kwargs.pop("pref", "")})
+            kwargs.update({"prefix": kwargs.pop("prefix", "")})
             kwargs.update({"terminator": kwargs.pop("end", "\n")})
             kwargs.update({"col_start": kwargs.pop("color", _FORMATS.get(_Levels.PLAIN.value).color)})
             self._log(_Levels.PLAIN.value, msg, tuple(), extra=kwargs)
@@ -74,7 +74,7 @@ class Logger(_logging.Logger):
             exit(1)
         else:
             self.__set_module_and_function(kwargs)
-            kwargs.update({"pref": kwargs.pop("pref", "")})
+            kwargs.update({"prefix": kwargs.pop("prefix", "")})
             kwargs.update({"terminator": kwargs.pop("end", "\n")})
             kwargs.update({"col_start": kwargs.pop("color", _FORMATS.get(_Levels.PLAIN.value).color)})
             super().info("Execution ended.\n\n", extra=kwargs)

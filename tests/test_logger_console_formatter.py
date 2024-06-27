@@ -57,155 +57,155 @@ class StreamHandlerWithConsoleFormatterTest(unittest.TestCase, FormatterExtensio
     def test_pref_handling_01(self):
         # Non Plain: blank | Plain: \r
         self.logger.info("Message 1", end='')
-        self.logger.plain("Message 2", pref='\r')
+        self.logger.plain("Message 2", prefix='\r')
         lines = self._get_output()
         self.assertEqual(1, len(lines))
         self.assertRegex(lines[0], self._get_combined_regex(
-            self._get_parsed_string(Levels.INFO.value, "Message 1", full_line=False, colored=self.colored, pref='^'), '\r',
+            self._get_parsed_string(Levels.INFO.value, "Message 1", full_line=False, colored=self.colored, prefix='^'), '\r',
             self._get_parsed_string(Levels.PLAIN.value, "Message 2", full_line=False, colored=self.colored, suffix="$")
         ))
 
     def test_pref_handling_02(self):
         # Non Plain: blank | Non-Plain: \r
         self.logger.info("Message 1", end='')
-        self.logger.info("Message 2", pref='\r')
+        self.logger.info("Message 2", prefix='\r')
         lines = self._get_output()
         self.assertEqual(1, len(lines))
         self.assertRegex(lines[0], self._get_combined_regex(
-            self._get_parsed_string(Levels.INFO.value, "Message 1", full_line=False, colored=self.colored, pref="^"), '\r',
+            self._get_parsed_string(Levels.INFO.value, "Message 1", full_line=False, colored=self.colored, prefix="^"), '\r',
             self._get_parsed_string(Levels.INFO.value, "Message 2", full_line=False, colored=self.colored, suffix="$"),
         ))
 
     def test_pref_handling_03(self):
         # Non Plain: blank | Plain: \t
         self.logger.info("Message 1", end='')
-        self.logger.plain("Message 2", pref='\t')
+        self.logger.plain("Message 2", prefix='\t')
         lines = self._get_output()
         self.assertEqual(1, len(lines))
         self.assertRegex(lines[0], self._get_combined_regex(
-            self._get_parsed_string(Levels.INFO.value, "Message 1", full_line=False, colored=self.colored, pref="^"), '\t',
+            self._get_parsed_string(Levels.INFO.value, "Message 1", full_line=False, colored=self.colored, prefix="^"), '\t',
             self._get_parsed_string(Levels.PLAIN.value, "Message 2", full_line=False, colored=self.colored, suffix="$")
         ))
 
     def test_pref_handling_04(self):
         # Non Plain: blank | Non-Plain: \t
         self.logger.info("Message 1", end='')
-        self.logger.info("Message 2", pref='\t')
+        self.logger.info("Message 2", prefix='\t')
         lines = self._get_output()
         self.assertEqual(2, len(lines))
         self.assertRegex(lines[0], self._get_level_regex(Levels.INFO.value, "Message 1", full_line=True, colored=self.colored))
-        self.assertRegex(lines[1], self._get_level_regex(Levels.INFO.value, "Message 2", full_line=True, colored=self.colored, pref='\t'))
+        self.assertRegex(lines[1], self._get_level_regex(Levels.INFO.value, "Message 2", full_line=True, colored=self.colored, prefix='\t'))
 
     def test_pref_handling_05(self):
         # Non Plain: \n   | Plain: \r
         self.logger.info("Message 1", end='\n')
-        self.logger.plain("Message 2", pref='\r')
+        self.logger.plain("Message 2", prefix='\r')
         lines = self._get_output()
         self.assertEqual(2, len(lines))
         self.assertRegex(lines[0], self._get_level_regex(Levels.INFO.value, "Message 1", full_line=True, colored=self.colored))
-        self.assertRegex(lines[1], self._get_level_regex(Levels.PLAIN.value, "Message 2", full_line=True, colored=self.colored, pref='\r'))
+        self.assertRegex(lines[1], self._get_level_regex(Levels.PLAIN.value, "Message 2", full_line=True, colored=self.colored, prefix='\r'))
 
     def test_pref_handling_06(self):
         # Non Plain: \n   | Non-Plain: \r
         self.logger.info("Message 1", end='\n')
-        self.logger.info("Message 2", pref='\r')
+        self.logger.info("Message 2", prefix='\r')
         lines = self._get_output()
         self.assertEqual(2, len(lines))
         self.assertRegex(lines[0], self._get_level_regex(Levels.INFO.value, "Message 1", full_line=True, colored=self.colored))
-        self.assertRegex(lines[1], self._get_level_regex(Levels.INFO.value, "Message 2", full_line=True, colored=self.colored, pref='\r'))
+        self.assertRegex(lines[1], self._get_level_regex(Levels.INFO.value, "Message 2", full_line=True, colored=self.colored, prefix='\r'))
 
     def test_pref_handling_07(self):
         # Non Plain: \n   | Plain: \t
         self.logger.info("Message 1", end='\n')
-        self.logger.plain("Message 2", pref='\t')
+        self.logger.plain("Message 2", prefix='\t')
         lines = self._get_output()
         self.assertEqual(2, len(lines))
         self.assertRegex(lines[0], self._get_level_regex(Levels.INFO.value, "Message 1", full_line=True, colored=self.colored))
-        self.assertRegex(lines[1], self._get_level_regex(Levels.PLAIN.value, "Message 2", full_line=True, colored=self.colored, pref='\t'))
+        self.assertRegex(lines[1], self._get_level_regex(Levels.PLAIN.value, "Message 2", full_line=True, colored=self.colored, prefix='\t'))
 
     def test_pref_handling_08(self):
         # Non Plain: \n   | Non-Plain: \t
         self.logger.info("Message 1", end='\n')
-        self.logger.info("Message 2", pref='\t')
+        self.logger.info("Message 2", prefix='\t')
         lines = self._get_output()
         self.assertEqual(2, len(lines))
         self.assertRegex(lines[0], self._get_level_regex(Levels.INFO.value, "Message 1", full_line=True, colored=self.colored))
-        self.assertRegex(lines[1], self._get_level_regex(Levels.INFO.value, "Message 2", full_line=True, colored=self.colored, pref='\t'))
+        self.assertRegex(lines[1], self._get_level_regex(Levels.INFO.value, "Message 2", full_line=True, colored=self.colored, prefix='\t'))
 
     def test_pref_handling_09(self):
         # Plain: blank    | Plain: \r
         self.logger.plain("Message 1", end='')
-        self.logger.plain("Message 2", pref='\r')
+        self.logger.plain("Message 2", prefix='\r')
         lines = self._get_output()
         self.assertEqual(1, len(lines))
         self.assertRegex(lines[0], self._get_combined_regex(
-            self._get_parsed_string(Levels.PLAIN.value, "Message 1", full_line=False, colored=self.colored, pref="^"), '\r',
+            self._get_parsed_string(Levels.PLAIN.value, "Message 1", full_line=False, colored=self.colored, prefix="^"), '\r',
             self._get_parsed_string(Levels.PLAIN.value, "Message 2", full_line=False, colored=self.colored, suffix="$")
         ))
 
     def test_pref_handling_10(self):
         # Plain: blank    | Non-Plain: \r
         self.logger.plain("Message 1", end='')
-        self.logger.info("Message 2", pref='\r')
+        self.logger.info("Message 2", prefix='\r')
         lines = self._get_output()
         self.assertEqual(1, len(lines))
         self.assertRegex(lines[0], self._get_combined_regex(
-            self._get_parsed_string(Levels.PLAIN.value, "Message 1", full_line=False, colored=self.colored, pref="^"), '\r',
+            self._get_parsed_string(Levels.PLAIN.value, "Message 1", full_line=False, colored=self.colored, prefix="^"), '\r',
             self._get_parsed_string(Levels.INFO.value, "Message 2", full_line=False, colored=self.colored, suffix="$")
         ))
 
     def test_pref_handling_11(self):
         # Plain: blank    | Plain: \t
         self.logger.plain("Message 1", end='')
-        self.logger.plain("Message 2", pref='\t')
+        self.logger.plain("Message 2", prefix='\t')
         lines = self._get_output()
         self.assertEqual(1, len(lines))
         self.assertRegex(lines[0], self._get_combined_regex(
-            self._get_parsed_string(Levels.PLAIN.value, "Message 1", full_line=False, colored=self.colored, pref="^"), '\t',
+            self._get_parsed_string(Levels.PLAIN.value, "Message 1", full_line=False, colored=self.colored, prefix="^"), '\t',
             self._get_parsed_string(Levels.PLAIN.value, "Message 2", full_line=False, colored=self.colored, suffix="$")
         ))
 
     def test_pref_handling_12(self):
         # Plain: blank    | Non-Plain: \t
         self.logger.plain("Message 1", end='')
-        self.logger.info("Message 2", pref='\t')
+        self.logger.info("Message 2", prefix='\t')
         lines = self._get_output()
         self.assertEqual(2, len(lines))
         self.assertRegex(lines[0], self._get_level_regex(Levels.PLAIN.value, "Message 1", full_line=True, colored=self.colored))
-        self.assertRegex(lines[1], self._get_level_regex(Levels.INFO.value, "Message 2", full_line=True, colored=self.colored, pref="\t"))
+        self.assertRegex(lines[1], self._get_level_regex(Levels.INFO.value, "Message 2", full_line=True, colored=self.colored, prefix="\t"))
 
     def test_pref_handling_13(self):
         # Plain: \n       | Plain: \r
         self.logger.plain("Message 1", end='\n')
-        self.logger.plain("Message 2", pref='\r')
+        self.logger.plain("Message 2", prefix='\r')
         lines = self._get_output()
         self.assertEqual(2, len(lines))
         self.assertRegex(lines[0], self._get_level_regex(Levels.PLAIN.value, "Message 1", full_line=True, colored=self.colored))
-        self.assertRegex(lines[1], self._get_level_regex(Levels.PLAIN.value, "Message 2", full_line=True, colored=self.colored, pref="\r"))
+        self.assertRegex(lines[1], self._get_level_regex(Levels.PLAIN.value, "Message 2", full_line=True, colored=self.colored, prefix="\r"))
 
     def test_pref_handling_14(self):
         # Plain: \n       | Non-Plain: \r
         self.logger.plain("Message 1", end='\n')
-        self.logger.info("Message 2", pref='\r')
+        self.logger.info("Message 2", prefix='\r')
         lines = self._get_output()
         self.assertEqual(2, len(lines))
         self.assertRegex(lines[0], self._get_level_regex(Levels.PLAIN.value, "Message 1", full_line=True, colored=self.colored))
-        self.assertRegex(lines[1], self._get_level_regex(Levels.INFO.value, "Message 2", full_line=True, colored=self.colored, pref="\r"))
+        self.assertRegex(lines[1], self._get_level_regex(Levels.INFO.value, "Message 2", full_line=True, colored=self.colored, prefix="\r"))
 
     def test_pref_handling_15(self):
         # Plain: \n       | Plain: \t
         self.logger.plain("Message 1", end='\n')
-        self.logger.plain("Message 2", pref='\t')
+        self.logger.plain("Message 2", prefix='\t')
         lines = self._get_output()
         self.assertEqual(2, len(lines))
         self.assertRegex(lines[0], self._get_level_regex(Levels.PLAIN.value, "Message 1", full_line=True, colored=self.colored))
-        self.assertRegex(lines[1], self._get_level_regex(Levels.PLAIN.value, "Message 2", full_line=True, colored=self.colored, pref="\t"))
+        self.assertRegex(lines[1], self._get_level_regex(Levels.PLAIN.value, "Message 2", full_line=True, colored=self.colored, prefix="\t"))
 
     def test_pref_handling_16(self):
         # Plain: \n       | Non-Plain: \t
         self.logger.plain("Message 1", end='\n')
-        self.logger.info("Message 2", pref='\t')
+        self.logger.info("Message 2", prefix='\t')
         lines = self._get_output()
         self.assertEqual(2, len(lines))
         self.assertRegex(lines[0], self._get_level_regex(Levels.PLAIN.value, "Message 1", full_line=True, colored=self.colored))
-        self.assertRegex(lines[1], self._get_level_regex(Levels.INFO.value, "Message 2", full_line=True, colored=self.colored, pref="\t"))
+        self.assertRegex(lines[1], self._get_level_regex(Levels.INFO.value, "Message 2", full_line=True, colored=self.colored, prefix="\t"))
