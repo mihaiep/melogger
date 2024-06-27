@@ -20,7 +20,7 @@ class LoggerTest(unittest.TestCase):
     def setUpClass(cls):
         cls.logger = LoggerBuilder.build(
             name="LoggerME",
-            level=Levels.INFO,
+            logs_level=Levels.INFO,
             formats=LoggerTest.FORMATS,
             terminator="",
             logs_path="tmp",

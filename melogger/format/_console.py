@@ -1,7 +1,7 @@
 import logging as _logging
 import os
 import re
-from copy import copy as _copy
+from copy import deepcopy as _deepcopy
 from typing import Literal, Mapping, Any
 
 from melogger.colors import Colors as _Colors
@@ -15,27 +15,34 @@ class _ConsoleFormatter(_logging.Formatter):
 
     def __init__(self, message_formats: dict, fmt: str = None, date_fmt: str = None, style: Literal["%", "{", "$"] = "%", validate: bool = True, *, defaults: Mapping[str, Any] = None):
         self.level_data = None
+        self.prev_message = None
         self.FORMATS = message_formats
         super().__init__(fmt, date_fmt, style, validate, defaults=defaults)
 
     def format(self, message: _logging.LogRecord) -> str:
+        formatted_message = self._format(_deepcopy(message))
+        self.prev_message = message
+        return formatted_message
+
+    def _format(self, message: _logging.LogRecord) -> str:
         _ConsoleFormatter.__validate_pref(message)
         _ConsoleFormatter.__validate_terminator(message)
 
-        cpy_msg = _copy(message)
-        if hasattr(cpy_msg, "crt_module"):
-            cpy_msg.module = cpy_msg.crt_module
-        if hasattr(cpy_msg, "crt_method_name"):
-            cpy_msg.funcName = cpy_msg.crt_method_name
+        if hasattr(message, "crt_module"):
+            message.module = message.crt_module
+        if hasattr(message, "crt_method_name"):
+            message.funcName = message.crt_method_name
 
-        self.level_data = self.FORMATS.get(cpy_msg.levelno)
-        cpy_msg.level_name = self.level_data.label
-        self.custom_format(cpy_msg)
-        return _logging.Formatter(self.level_data.text_format).format(cpy_msg)
+        self.level_data = self.FORMATS.get(message.levelno)
+        message.level_name = self.level_data.label
+        self.custom_format(message)
+        return _logging.Formatter(self.level_data.text_format).format(message)
 
     def custom_format(self, message: _logging.LogRecord) -> None:
         message.col_end = _Colors.END
         message.col_start = self.level_data.color if not hasattr(message, "col_start") else "".join(re.findall(self.ANSI_REGEX, message.col_start))
+        if self.prev_message is not None and message.levelno < Levels.PLAIN.value and '\r' not in message.pref and '\n' not in self.prev_message.terminator:
+            message.pref = '\n' + message.pref
 
     # noinspection PyUnresolvedReferences
     @staticmethod

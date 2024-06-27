@@ -1,6 +1,8 @@
 import argparse
 import os
 import re
+import sys
+import time
 
 
 def increment_version(_version, is_major, is_minor, is_patch):
@@ -17,7 +19,7 @@ def increment_version(_version, is_major, is_minor, is_patch):
 
 
 if __name__ == "__main__":
-    ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+    ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "."))
     INIT_FILE = os.path.join(ROOT_PATH, "melogger/__init__.py")
     PACKAGE_NAME = os.path.basename(ROOT_PATH)
 
@@ -33,6 +35,7 @@ if __name__ == "__main__":
         exit(1)
 
     # Calculate new version and update setup.py
+    need_version_revert = False
     init_content = open(INIT_FILE, "r").read()
     version_line = re.findall("(^VERSION *= *)(['\"])(.+)(\\2)", init_content, flags=re.MULTILINE)[0]
     new_version = increment_version(
@@ -42,6 +45,13 @@ if __name__ == "__main__":
         is_patch=args.patch
     )
     try:
+        # Running tests
+        result = os.system('python3 -m unittest discover')
+        if result != 0:
+            sys.stderr.flush()
+            time.sleep(0.25)
+            raise Exception(f"Cannot start deployment - there are unit tests failures for new version: {new_version}")
+
         # Cleanup old files
         old_dirs_path = ["build", "dist", f"{PACKAGE_NAME}.egg-info"]
         old_dirs_path = list(filter(lambda x: os.path.isdir(os.path.join(ROOT_PATH, x)), old_dirs_path))
@@ -56,6 +66,7 @@ if __name__ == "__main__":
 
         # Persist new version
         open(INIT_FILE, "w").writelines(re.sub("".join(version_line), "".join(list(version_line[:2]) + [new_version] + [version_line[-1]]), init_content))
+        need_version_revert = True
 
         # Install package locally
         if args.install:
@@ -68,4 +79,5 @@ if __name__ == "__main__":
 
     except Exception as e:
         print(f"\033[31m[BUILD FAILED]\033[0m {e}")
-        open(INIT_FILE, "w").writelines(init_content)
+        if need_version_revert:
+            open(INIT_FILE, "w").writelines(init_content)
