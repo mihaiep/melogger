@@ -12,16 +12,16 @@ class _ConsoleFormatter(_logging.Formatter):
     LINE_SEP = os.linesep
     ANSI_REGEX = r"\033\[[\d;]*[A-Za-z]"
     _logging.addLevelName(Levels.PLAIN.value, "PLAIN")
+    prev_message = None
 
     def __init__(self, message_formats: dict, fmt: str = None, date_fmt: str = None, style: Literal["%", "{", "$"] = "%", validate: bool = True, *, defaults: Mapping[str, Any] = None):
         self.level_data = None
-        self.prev_message = None
         self.FORMATS = message_formats
         super().__init__(fmt, date_fmt, style, validate, defaults=defaults)
 
     def format(self, message: _logging.LogRecord) -> str:
         formatted_message = self._format(_deepcopy(message))
-        self.prev_message = message
+        self.__set_prev_message(message)
         return formatted_message
 
     def _format(self, message: _logging.LogRecord) -> str:
@@ -43,6 +43,10 @@ class _ConsoleFormatter(_logging.Formatter):
         message.col_start = self.level_data.color if not hasattr(message, "col_start") else "".join(re.findall(self.ANSI_REGEX, message.col_start))
         if self.prev_message is not None and message.levelno < Levels.PLAIN.value and '\r' not in message.prefix and '\n' not in self.prev_message.terminator:
             message.prefix = '\n' + message.prefix
+
+    @classmethod
+    def __set_prev_message(cls, message: _logging.LogRecord) -> None:
+        cls.prev_message = message
 
     # noinspection PyUnresolvedReferences
     @staticmethod
