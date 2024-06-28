@@ -6,4 +6,4 @@ from .utils import Levels, FORMATS
 
 __all__ = ["LoggerBuilder", "Logger", "ConsoleFormatter", "FileFormatter", "Levels", "Colors", "FORMATS"]
 
-VERSION = "1.2.1"
+VERSION = "1.2.2"

@@ -30,15 +30,15 @@ Generate a new console handler.
 
 Allows to add a file handler on an existing logger.
 
-	file_name           logs file name
+    file_name           logs file name
     logs_level          lowest logs level that will be displayed
-	formats             a dict to describe the format for each log level
-	logs_path           path where logs are going be stored
-	file_terminator     end line character for files
-	file_mode           open mode - same as open(...,mode=<mode>)
-	file_enc            encoding for file
-	file_backups        number of replicas
-	file_max_size       max size of a fil
+    formats             a dict to describe the format for each log level
+    logs_path           path where logs are going be stored
+    file_terminator     end line character for files
+    file_mode           open mode - same as open(...,mode=<mode>)
+    file_enc            encoding for file
+    file_backups        number of replicas
+    file_max_size       max size of a fil
 
 ### LoggerBuilder.remove_handlers
 
@@ -55,7 +55,7 @@ This is an extended class of logging.Logger that has an additional level **PLAIN
 Default methods for generating logs were extended with some additional arguments:
 
     col_start   [Color start]   ANSI code for color
-    prefix        [Prefix]        Prefix for that line, it can be a combination of '', ' ', '\t' or '\n' 
+    prefix        [Prefix]      Prefix for that line, it can be a combination of '', ' ', '\t' or '\n' 
     end         [Terminator]    Endline, it can be a combination of '' or '\n'
 
 ![warn.png](warn.png)
